@@ -358,7 +358,20 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
+                <TextView
+                    android:id="@+id/tvNoEvents"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:text="No events found"
+                    android:textColor="@color/grey"
+                    android:textSize="15sp"
+                    android:visibility="gone"/>
+
+
             </LinearLayout>
+
 
         </LinearLayout>
 
