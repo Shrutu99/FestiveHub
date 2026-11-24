@@ -5,18 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
-import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,21 +33,7 @@ public class SignUpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Keyboard adjustment
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
-
-        getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-        );
-
         setContentView(R.layout.activity_signup);
-
-        // Initialize ScrollView
-        ScrollView scrollSignup = findViewById(R.id.scrollSignup);
-
-
-        ViewCompat.requestApplyInsets(scrollSignup);
 
         // Connect XML views
         etFullName = findViewById(R.id.etFullName);
@@ -64,8 +44,6 @@ public class SignUpActivity extends AppCompatActivity {
         btnSignUp = findViewById(R.id.btnSignUp);
         tvLogin = findViewById(R.id.tvLogin);
 
-
-
         // Firebase instances
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -75,12 +53,10 @@ public class SignUpActivity extends AppCompatActivity {
 
         // Login navigation
         tvLogin.setOnClickListener(v -> {
-
             Intent intent = new Intent(
                     SignUpActivity.this,
                     LoginActivity.class
             );
-
             startActivity(intent);
             finish();
         });
@@ -126,6 +102,12 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
+        if (TextUtils.isEmpty(confirmPassword)) {
+            etConfirmPassword.setError("Confirm your password");
+            etConfirmPassword.requestFocus();
+            return;
+        }
+
         if (!password.equals(confirmPassword)) {
             etConfirmPassword.setError("Passwords do not match");
             etConfirmPassword.requestFocus();
@@ -141,6 +123,17 @@ public class SignUpActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
 
                     if (task.isSuccessful()) {
+
+                        if (mAuth.getCurrentUser() == null) {
+                            btnSignUp.setEnabled(true);
+                            btnSignUp.setText("SIGN UP");
+                            Toast.makeText(
+                                    SignUpActivity.this,
+                                    "Unable to get user details.",
+                                    Toast.LENGTH_LONG
+                            ).show();
+                            return;
+                        }
 
                         String userId = mAuth.getCurrentUser().getUid();
 

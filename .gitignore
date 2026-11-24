@@ -1,27 +1,30 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
-
-# Android Studio and Gradle
+# Android Studio
 .idea/
+*.iml
+# Gradle
 .gradle/
 **/build/
 
 # Local machine settings
 local.properties
 
-# Temporary files
-*.iml
+# Android generated files
+.externalNativeBuild/
+.cxx/
+captures/
+
+# Operating system
 .DS_Store
+
+# Signing credentials - never upload
+*.jks
+*.keystore
+key.properties
+
+# Environment variables and secrets
+.env
+.env.*
+
+# Firebase private service account credentials
+serviceAccountKey.json
+*-service-account*.json
