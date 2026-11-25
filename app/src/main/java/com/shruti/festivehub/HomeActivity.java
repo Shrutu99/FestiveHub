@@ -1,21 +1,32 @@
 
 package com.shruti.festivehub;
 
+import android.content.Intent;
+import android.content.Intent;
+
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.card.MaterialCardView;
 
 public class HomeActivity extends AppCompatActivity {
 
     private EditText etSearchEvent;
+
 
     private TextView tvAllCategory;
     private TextView tvTechnical;
@@ -33,16 +44,63 @@ public class HomeActivity extends AppCompatActivity {
 
     private String selectedCategory = "All";
 
+    // Carousel variables
+    private ViewPager2 eventBannerCarousel;
+    private LinearLayout bannerIndicators;
+
+    private final int bannerCount = 3;
+
+    private final Handler sliderHandler =
+            new Handler(Looper.getMainLooper());
+
+    private final Runnable sliderRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (eventBannerCarousel != null) {
+                int nextPosition =
+                        eventBannerCarousel.getCurrentItem() + 1;
+
+                eventBannerCarousel.setCurrentItem(nextPosition, true);
+
+                sliderHandler.postDelayed(this, 3000);
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // Initialize Views
+        // Initialize existing views
         initializeViews();
+
+
+        // Setup carousel
+        setupBannerCarousel();
 
         // Set Click Listeners
         setupCategoryListeners();
+
+        // Event Card Click Listeners
+
+        cardEvent1.setOnClickListener(v -> openEventDetails(
+                "Tech Fest",
+                "Technical",
+                "Discover technology, innovation and creativity through exciting activities and competitions.",
+                "To be announced",
+                "To be announced",
+                "To be announced"
+        ));
+
+        cardEvent2.setOnClickListener(v -> openEventDetails(
+                "Cultural Festival",
+                "Cultural",
+                "Celebrate creativity, art, music and cultural performances.",
+                "To be announced",
+                "To be announced",
+                "To be announced"
+        ));
 
         // Search Functionality
         setupSearch();
@@ -56,6 +114,156 @@ public class HomeActivity extends AppCompatActivity {
 
         // Display All Events Initially
         filterEvents();
+    }
+
+
+    // PASTE STEP 6 HERE
+    private void openEventDetails(
+            String title,
+            String category,
+            String description,
+            String date,
+            String time,
+            String venue) {
+
+        Intent intent = new Intent(
+                HomeActivity.this,
+                EventDetailActivity.class
+        );
+
+        intent.putExtra("eventTitle", title);
+        intent.putExtra("eventCategory", category);
+        intent.putExtra("eventDescription", description);
+        intent.putExtra("eventDate", date);
+        intent.putExtra("eventTime", time);
+        intent.putExtra("eventVenue", venue);
+
+        startActivity(intent);
+    }
+
+    // Setup Event Banner Carousel
+    private void setupBannerCarousel() {
+
+        eventBannerCarousel =
+                findViewById(R.id.eventBannerCarousel);
+
+        bannerIndicators =
+                findViewById(R.id.bannerIndicators);
+
+        eventBannerCarousel.setAdapter(
+                new EventBannerAdapter()
+        );
+
+        // Create indicator dots
+        createIndicatorDots();
+
+        // Start from the middle for infinite looping
+        int startPosition = Integer.MAX_VALUE / 2;
+        startPosition = startPosition - (startPosition % bannerCount);
+
+        eventBannerCarousel.setCurrentItem(startPosition, false);
+
+        // Update dots when banner changes
+        eventBannerCarousel.registerOnPageChangeCallback(
+                new ViewPager2.OnPageChangeCallback() {
+
+                    @Override
+                    public void onPageSelected(int position) {
+                        updateIndicatorDots(position);
+                    }
+                }
+        );
+
+        updateIndicatorDots(startPosition);
+    }
+
+    // Create three indicator dots
+    private void createIndicatorDots() {
+
+        bannerIndicators.removeAllViews();
+
+        for (int i = 0; i < bannerCount; i++) {
+
+            View dot = new View(this);
+
+            LinearLayout.LayoutParams params =
+                    new LinearLayout.LayoutParams(
+                            dpToPx(8),
+                            dpToPx(8)
+                    );
+
+            params.setMargins(
+                    dpToPx(5),
+                    0,
+                    dpToPx(5),
+                    0
+            );
+
+            dot.setLayoutParams(params);
+
+            bannerIndicators.addView(dot);
+        }
+    }
+
+    // Highlight the currently selected dot
+    private void updateIndicatorDots(int position) {
+
+        int selectedPosition = position % bannerCount;
+
+        for (int i = 0; i < bannerCount; i++) {
+
+            View dot = bannerIndicators.getChildAt(i);
+
+            GradientDrawable drawable =
+                    new GradientDrawable();
+
+            drawable.setShape(GradientDrawable.RECTANGLE);
+            drawable.setCornerRadius(dpToPx(20));
+
+            LinearLayout.LayoutParams params =
+                    (LinearLayout.LayoutParams) dot.getLayoutParams();
+
+            if (i == selectedPosition) {
+
+                drawable.setColor(Color.parseColor("#F28C28"));
+
+                params.width = dpToPx(20);
+                params.height = dpToPx(8);
+
+            } else {
+
+                drawable.setColor(Color.parseColor("#D0D0D0"));
+
+                params.width = dpToPx(8);
+                params.height = dpToPx(8);
+            }
+
+            dot.setBackground(drawable);
+            dot.setLayoutParams(params);
+        }
+    }
+
+    // Convert dp into pixels
+    private int dpToPx(int dp) {
+        return (int) (dp * getResources()
+                .getDisplayMetrics().density + 0.5f);
+    }
+
+    // Start automatic sliding
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        sliderHandler.removeCallbacks(sliderRunnable);
+        sliderHandler.postDelayed(sliderRunnable, 3000);
+    }
+
+    // Stop automatic sliding when screen is not visible
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        sliderHandler.removeCallbacks(sliderRunnable);
     }
 
     private void initializeViews() {

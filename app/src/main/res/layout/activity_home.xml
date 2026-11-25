@@ -73,6 +73,7 @@
                     android:textColor="#DCE5F0"
                     android:textSize="14sp"/>
 
+
             </LinearLayout>
 
             <!-- Main Content -->
@@ -97,6 +98,28 @@
                     android:textColor="@color/dark_text"
                     android:textColorHint="@color/grey"
                     android:textSize="14sp"/>
+
+                <!-- Event Banner Carousel -->
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/eventBannerCarousel"
+                    android:layout_width="match_parent"
+                    android:layout_height="170dp"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="horizontal" />
+
+
+                <!-- Carousel Page Indicators -->
+                <LinearLayout
+                    android:id="@+id/bannerIndicators"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="4dp" />
+
 
                 <!-- Categories Heading -->
                 <TextView

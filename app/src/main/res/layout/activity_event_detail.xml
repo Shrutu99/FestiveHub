@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primary"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+
+            <ImageButton
+                android:id="@+id/tvBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Go back"
+                android:scaleType="centerInside"
+                android:padding="12dp"
+                android:layout_marginTop="8dp"
+                app:tint="@color/white" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Event Details"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Explore event information"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <!-- Event Information -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Event Category -->
+            <TextView
+                android:id="@+id/tvEventCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/category_selected"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="7dp"
+                android:text="Technical"
+                android:textColor="@color/white"
+                android:textSize="13sp" />
+
+            <!-- Event Title -->
+            <TextView
+                android:id="@+id/tvDetailEventTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Tech Fest"
+                android:textColor="@color/dark_text"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <!-- Event Description -->
+            <TextView
+                android:id="@+id/tvEventDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Discover technology, innovation and creativity through exciting activities and competitions."
+                android:textColor="@color/grey"
+                android:textSize="14sp"
+                android:lineSpacingExtra="4dp" />
+
+            <!-- Date -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Event Date"
+                android:textColor="@color/dark_text"
+                android:textStyle="bold"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tvEventDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/input_background"
+                android:padding="14dp"
+                android:text="To be announced"
+                android:textColor="@color/grey"
+                android:textSize="14sp" />
+
+            <!-- Time -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="Event Time"
+                android:textColor="@color/dark_text"
+                android:textStyle="bold"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tvEventTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/input_background"
+                android:padding="14dp"
+                android:text="To be announced"
+                android:textColor="@color/grey"
+                android:textSize="14sp" />
+
+            <!-- Venue -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="Event Venue"
+                android:textColor="@color/dark_text"
+                android:textStyle="bold"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tvEventVenue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/input_background"
+                android:padding="14dp"
+                android:text="To be announced"
+                android:textColor="@color/grey"
+                android:textSize="14sp" />
+
+            <!-- Register Button -->
+            <Button
+                android:id="@+id/btnRegisterEvent"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginTop="28dp"
+                android:backgroundTint="@color/primary"
+                android:text="Register Now"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
