@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add New Event"
+            android:textColor="@color/primary"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Enter the details of your event"
+            android:textColor="@color/grey"
+            android:textSize="14sp" />
+
+        <!-- Event Banner Upload -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="vertical"/>
+
+
+        <!-- Event Title -->
+        <EditText
+            android:id="@+id/etEventTitle"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="24dp"
+            android:hint="Event Title"
+            android:inputType="textCapSentences"
+            android:padding="12dp"
+            android:background="@android:drawable/edit_text" />
+
+        <!-- Category -->
+        <EditText
+            android:id="@+id/etEventCategory"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="14dp"
+            android:hint="Event Category"
+            android:inputType="textCapSentences"
+            android:padding="12dp"
+            android:background="@android:drawable/edit_text" />
+
+        <!-- Description -->
+        <EditText
+            android:id="@+id/etEventDescription"
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:layout_marginTop="14dp"
+            android:hint="Event Description"
+            android:gravity="top"
+            android:inputType="textMultiLine|textCapSentences"
+            android:padding="12dp"
+            android:background="@android:drawable/edit_text" />
+
+        <!-- Date -->
+        <EditText
+            android:id="@+id/etEventDate"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="14dp"
+            android:hint="Select Event Date"
+            android:focusable="false"
+            android:clickable="true"
+            android:padding="12dp"
+            android:background="@android:drawable/edit_text" />
+
+        <!-- Time -->
+        <EditText
+            android:id="@+id/etEventTime"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="14dp"
+            android:hint="Select Event Time"
+            android:focusable="false"
+            android:clickable="true"
+            android:padding="12dp"
+            android:background="@android:drawable/edit_text" />
+
+        <!-- Venue -->
+        <EditText
+            android:id="@+id/etEventVenue"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="14dp"
+            android:hint="Event Venue"
+            android:inputType="textCapSentences"
+            android:padding="12dp"
+            android:background="@android:drawable/edit_text" />
+
+        <!-- Save Button -->
+        <Button
+            android:id="@+id/btnSaveEvent"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="20dp"
+            android:text="SAVE EVENT"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:backgroundTint="@color/primary" />
+
+    </LinearLayout>
+
+</ScrollView>

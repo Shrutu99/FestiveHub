@@ -2,31 +2,36 @@
 package com.shruti.festivehub;
 
 import android.content.Intent;
-import android.content.Intent;
-
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.View;
-
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity {
 
     private EditText etSearchEvent;
-
 
     private TextView tvAllCategory;
     private TextView tvTechnical;
@@ -36,13 +41,14 @@ public class HomeActivity extends AppCompatActivity {
     private TextView tvNoEvents;
     private TextView tvViewAll;
 
-    private MaterialCardView cardEvent1;
-    private MaterialCardView cardEvent2;
-
-    private TextView tvEventTitle1;
-    private TextView tvEventTitle2;
+    private LinearLayout navProfile;
+    private LinearLayout layoutEvents;
 
     private String selectedCategory = "All";
+
+    private FirebaseFirestore db;
+
+    private final List<EventModel> eventList = new ArrayList<>();
 
     // Carousel variables
     private ViewPager2 eventBannerCarousel;
@@ -72,114 +78,124 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // Initialize existing views
+        db = FirebaseFirestore.getInstance();
+
         initializeViews();
 
-
-        // Setup carousel
         setupBannerCarousel();
 
-        // Set Click Listeners
         setupCategoryListeners();
 
-        // Event Card Click Listeners
+        // Open Student Profile
+        navProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    HomeActivity.this,
+                    ProfileActivity.class
+            );
+            startActivity(intent);
+        });
 
-        cardEvent1.setOnClickListener(v -> openEventDetails(
-                "Tech Fest",
-                "Technical",
-                "Discover technology, innovation and creativity through exciting activities and competitions.",
-                "To be announced",
-                "To be announced",
-                "To be announced"
-        ));
-
-        cardEvent2.setOnClickListener(v -> openEventDetails(
-                "Cultural Festival",
-                "Cultural",
-                "Celebrate creativity, art, music and cultural performances.",
-                "To be announced",
-                "To be announced",
-                "To be announced"
-        ));
-
-        // Search Functionality
+        // Search functionality
         setupSearch();
 
-        // View All Functionality
+        // View All functionality
         tvViewAll.setOnClickListener(v -> {
             etSearchEvent.setText("");
             selectCategory("All");
             filterEvents();
         });
 
-        // Display All Events Initially
-        filterEvents();
+        // Load Admin-created events
+        loadEvents();
+    }
+
+    // Load events from Firestore
+    private void loadEvents() {
+
+        tvNoEvents.setVisibility(View.GONE);
+        layoutEvents.removeAllViews();
+
+        TextView loadingText = new TextView(this);
+        loadingText.setText("Loading events...");
+        loadingText.setGravity(Gravity.CENTER);
+        loadingText.setPadding(10, 30, 10, 30);
+
+        layoutEvents.addView(loadingText);
+
+        db.collection("events")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+
+                    eventList.clear();
+                    layoutEvents.removeAllViews();
+
+                    for (QueryDocumentSnapshot document :
+                            querySnapshot) {
+
+                        EventModel event = new EventModel();
+
+                        event.eventId = document.getId();
+
+                        event.title =
+                                document.getString("eventTitle");
+
+                        event.category =
+                                document.getString("eventCategory");
+
+                        event.description =
+                                document.getString("eventDescription");
+
+                        event.date =
+                                document.getString("eventDate");
+
+                        event.time =
+                                document.getString("eventTime");
+
+                        event.venue =
+                                document.getString("eventVenue");
+
+                        eventList.add(event);
+                    }
+
+                    filterEvents();
+                })
+                .addOnFailureListener(e -> {
+
+                    layoutEvents.removeAllViews();
+
+                    tvNoEvents.setText(
+                            "Unable to load events. Please try again."
+                    );
+
+                    tvNoEvents.setVisibility(View.VISIBLE);
+
+                    Toast.makeText(
+                            HomeActivity.this,
+                            "Failed to load events: " + e.getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                });
     }
 
 
-    // PASTE STEP 6 HERE
-    private void openEventDetails(
-            String title,
-            String category,
-            String description,
-            String date,
-            String time,
-            String venue) {
-
-        Intent intent = new Intent(
-                HomeActivity.this,
-                EventDetailActivity.class
-        );
-
-        intent.putExtra("eventTitle", title);
-        intent.putExtra("eventCategory", category);
-        intent.putExtra("eventDescription", description);
-        intent.putExtra("eventDate", date);
-        intent.putExtra("eventTime", time);
-        intent.putExtra("eventVenue", venue);
-
-        startActivity(intent);
-    }
-
-    // Setup Event Banner Carousel
+    // Setup Banner Carousel
     private void setupBannerCarousel() {
 
-        eventBannerCarousel =
-                findViewById(R.id.eventBannerCarousel);
+        eventBannerCarousel = findViewById(R.id.eventBannerCarousel);
+        bannerIndicators = findViewById(R.id.bannerIndicators);
 
-        bannerIndicators =
-                findViewById(R.id.bannerIndicators);
+        EventBannerAdapter adapter = new EventBannerAdapter();
 
-        eventBannerCarousel.setAdapter(
-                new EventBannerAdapter()
-        );
+        eventBannerCarousel.setAdapter(adapter);
+        eventBannerCarousel.setOffscreenPageLimit(1);
 
-        // Create indicator dots
-        createIndicatorDots();
-
-        // Start from the middle for infinite looping
+        // Start near the middle for continuous sliding
         int startPosition = Integer.MAX_VALUE / 2;
-        startPosition = startPosition - (startPosition % bannerCount);
+        startPosition -= startPosition % bannerCount;
 
         eventBannerCarousel.setCurrentItem(startPosition, false);
 
-        // Update dots when banner changes
-        eventBannerCarousel.registerOnPageChangeCallback(
-                new ViewPager2.OnPageChangeCallback() {
-
-                    @Override
-                    public void onPageSelected(int position) {
-                        updateIndicatorDots(position);
-                    }
-                }
-        );
-
-        updateIndicatorDots(startPosition);
-    }
-
-    // Create three indicator dots
-    private void createIndicatorDots() {
-
+        // Create indicator dots
         bannerIndicators.removeAllViews();
 
         for (int i = 0; i < bannerCount; i++) {
@@ -193,82 +209,79 @@ public class HomeActivity extends AppCompatActivity {
                     );
 
             params.setMargins(
-                    dpToPx(5),
-                    0,
-                    dpToPx(5),
-                    0
+                    dpToPx(5), 0,
+                    dpToPx(5), 0
             );
 
             dot.setLayoutParams(params);
 
+            GradientDrawable drawable = new GradientDrawable();
+            drawable.setShape(GradientDrawable.OVAL);
+            drawable.setColor(Color.LTGRAY);
+
+            dot.setBackground(drawable);
+
             bannerIndicators.addView(dot);
         }
+
+        updateBannerIndicators(startPosition);
+
+        // Update dots when banner changes
+        eventBannerCarousel.registerOnPageChangeCallback(
+                new ViewPager2.OnPageChangeCallback() {
+
+                    @Override
+                    public void onPageSelected(int position) {
+                        updateBannerIndicators(position);
+                    }
+                }
+        );
     }
 
-    // Highlight the currently selected dot
-    private void updateIndicatorDots(int position) {
+    // Update selected banner indicator
+    private void updateBannerIndicators(int position) {
 
         int selectedPosition = position % bannerCount;
 
-        for (int i = 0; i < bannerCount; i++) {
+        for (int i = 0; i < bannerIndicators.getChildCount(); i++) {
 
             View dot = bannerIndicators.getChildAt(i);
 
-            GradientDrawable drawable =
-                    new GradientDrawable();
+            GradientDrawable drawable = new GradientDrawable();
 
-            drawable.setShape(GradientDrawable.RECTANGLE);
-            drawable.setCornerRadius(dpToPx(20));
-
-            LinearLayout.LayoutParams params =
-                    (LinearLayout.LayoutParams) dot.getLayoutParams();
+            drawable.setShape(GradientDrawable.OVAL);
 
             if (i == selectedPosition) {
-
                 drawable.setColor(Color.parseColor("#F28C28"));
-
-                params.width = dpToPx(20);
-                params.height = dpToPx(8);
-
             } else {
-
-                drawable.setColor(Color.parseColor("#D0D0D0"));
-
-                params.width = dpToPx(8);
-                params.height = dpToPx(8);
+                drawable.setColor(Color.LTGRAY);
             }
 
             dot.setBackground(drawable);
-            dot.setLayoutParams(params);
         }
     }
 
-    // Convert dp into pixels
-    private int dpToPx(int dp) {
-        return (int) (dp * getResources()
-                .getDisplayMetrics().density + 0.5f);
+
+    // Event data model
+    private static class EventModel {
+
+        String eventId;
+        String title;
+        String category;
+        String description;
+        String date;
+        String time;
+        String venue;
     }
 
-    // Start automatic sliding
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        sliderHandler.removeCallbacks(sliderRunnable);
-        sliderHandler.postDelayed(sliderRunnable, 3000);
-    }
-
-    // Stop automatic sliding when screen is not visible
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        sliderHandler.removeCallbacks(sliderRunnable);
-    }
-
+    // Initialize views
     private void initializeViews() {
 
         etSearchEvent = findViewById(R.id.etSearchEvent);
+
+        navProfile = findViewById(R.id.navProfile);
+
+        layoutEvents = findViewById(R.id.layoutEvents);
 
         tvAllCategory = findViewById(R.id.tvAllCategory);
         tvTechnical = findViewById(R.id.tvTechnical);
@@ -278,29 +291,33 @@ public class HomeActivity extends AppCompatActivity {
 
         tvNoEvents = findViewById(R.id.tvNoEvents);
         tvViewAll = findViewById(R.id.tvViewAll);
-
-        cardEvent1 = findViewById(R.id.cardEvent1);
-        cardEvent2 = findViewById(R.id.cardEvent2);
-
-        tvEventTitle1 = findViewById(R.id.tvEventTitle1);
-        tvEventTitle2 = findViewById(R.id.tvEventTitle2);
     }
 
-    // Category Click Listeners
+    // Category click listeners
     private void setupCategoryListeners() {
 
-        tvAllCategory.setOnClickListener(v -> selectCategory("All"));
+        tvAllCategory.setOnClickListener(
+                v -> selectCategory("All")
+        );
 
-        tvTechnical.setOnClickListener(v -> selectCategory("Technical"));
+        tvTechnical.setOnClickListener(
+                v -> selectCategory("Technical")
+        );
 
-        tvCultural.setOnClickListener(v -> selectCategory("Cultural"));
+        tvCultural.setOnClickListener(
+                v -> selectCategory("Cultural")
+        );
 
-        tvSports.setOnClickListener(v -> selectCategory("Sports"));
+        tvSports.setOnClickListener(
+                v -> selectCategory("Sports")
+        );
 
-        tvWorkshop.setOnClickListener(v -> selectCategory("Workshop"));
+        tvWorkshop.setOnClickListener(
+                v -> selectCategory("Workshop")
+        );
     }
 
-    // Change Selected Category
+    // Change selected category
     private void selectCategory(String category) {
 
         selectedCategory = category;
@@ -348,7 +365,7 @@ public class HomeActivity extends AppCompatActivity {
         filterEvents();
     }
 
-    // Search Events
+    // Search functionality
     private void setupSearch() {
 
         etSearchEvent.addTextChangedListener(new TextWatcher() {
@@ -371,54 +388,231 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    // Apply Category and Search Filters Together
+    // Filter events by category and search
     private void filterEvents() {
+
+        layoutEvents.removeAllViews();
 
         String searchText = etSearchEvent.getText()
                 .toString()
                 .trim()
-                .toLowerCase();
+                .toLowerCase(Locale.ROOT);
 
-        // Event 1: Tech Fest
-        boolean showEvent1 =
-                matchesFilter("Tech Fest", "Technical", searchText);
+        int visibleCount = 0;
 
-        // Event 2: Cultural Festival
-        boolean showEvent2 =
-                matchesFilter("Cultural Festival", "Cultural", searchText);
+        for (EventModel event : eventList) {
 
-        cardEvent1.setVisibility(
-                showEvent1 ? View.VISIBLE : View.GONE
-        );
+            String title = safe(event.title);
+            String category = safe(event.category);
+            String description = safe(event.description);
+            String venue = safe(event.venue);
 
-        cardEvent2.setVisibility(
-                showEvent2 ? View.VISIBLE : View.GONE
-        );
+            boolean categoryMatches =
+                    selectedCategory.equals("All")
+                            || selectedCategory.equalsIgnoreCase(category);
 
-        // Show message if no events match
-        if (showEvent1 || showEvent2) {
+            boolean searchMatches =
+                    title.toLowerCase(Locale.ROOT).contains(searchText)
+                            || category.toLowerCase(Locale.ROOT).contains(searchText)
+                            || description.toLowerCase(Locale.ROOT).contains(searchText)
+                            || venue.toLowerCase(Locale.ROOT).contains(searchText);
 
-            tvNoEvents.setVisibility(View.GONE);
+            if (categoryMatches && searchMatches) {
+
+                addEventCard(event);
+                visibleCount++;
+            }
+        }
+
+        if (visibleCount == 0) {
+
+            tvNoEvents.setText(
+                    eventList.isEmpty()
+                            ? "No events available yet."
+                            : "No events found."
+            );
+
+            tvNoEvents.setVisibility(View.VISIBLE);
 
         } else {
 
-            tvNoEvents.setVisibility(View.VISIBLE);
+            tvNoEvents.setVisibility(View.GONE);
         }
     }
 
-    // Check Whether Event Matches Selected Filters
-    private boolean matchesFilter(
-            String eventName,
-            String eventCategory,
-            String searchText) {
+    // Create dynamic event card
+    private void addEventCard(EventModel event) {
 
-        boolean categoryMatches =
-                selectedCategory.equals("All")
-                        || selectedCategory.equals(eventCategory);
+        MaterialCardView card = new MaterialCardView(this);
 
-        boolean searchMatches =
-                eventName.toLowerCase().contains(searchText);
+        LinearLayout.LayoutParams cardParams =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
 
-        return categoryMatches && searchMatches;
+        cardParams.setMargins(
+                0, dpToPx(5), 0, dpToPx(15)
+        );
+
+        card.setLayoutParams(cardParams);
+        card.setRadius(dpToPx(12));
+        card.setCardElevation(dpToPx(3));
+        card.setCardBackgroundColor(Color.WHITE);
+        card.setStrokeWidth(0);
+        card.setClickable(true);
+        card.setFocusable(true);
+
+        LinearLayout cardContent = new LinearLayout(this);
+        cardContent.setOrientation(LinearLayout.VERTICAL);
+
+        // Event banner placeholder
+        TextView banner = new TextView(this);
+
+        banner.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        dpToPx(135)
+                )
+        );
+
+        banner.setGravity(Gravity.CENTER);
+        banner.setText(safe(event.category).toUpperCase(Locale.ROOT)
+                + " EVENT");
+        banner.setTextColor(Color.WHITE);
+        banner.setTextSize(19);
+        banner.setTypeface(null, Typeface.BOLD);
+
+        int bannerColor = Color.parseColor("#12345A");
+
+        if ("Cultural".equalsIgnoreCase(event.category)) {
+            bannerColor = Color.parseColor("#F28C28");
+        } else if ("Sports".equalsIgnoreCase(event.category)) {
+            bannerColor = Color.parseColor("#287A69");
+        } else if ("Workshop".equalsIgnoreCase(event.category)) {
+            bannerColor = Color.parseColor("#6C63A8");
+        }
+
+        banner.setBackgroundColor(bannerColor);
+
+        // Event information
+        LinearLayout details = new LinearLayout(this);
+
+        details.setOrientation(LinearLayout.VERTICAL);
+        details.setPadding(
+                dpToPx(15),
+                dpToPx(15),
+                dpToPx(15),
+                dpToPx(15)
+        );
+
+        TextView tvTitle = new TextView(this);
+
+        tvTitle.setText(safe(event.title));
+        tvTitle.setTextColor(Color.parseColor("#273043"));
+        tvTitle.setTextSize(17);
+        tvTitle.setTypeface(null, Typeface.BOLD);
+
+        TextView tvCategory = createDetailText(
+                "Category: " + safe(event.category)
+        );
+
+        TextView tvDate = createDetailText(
+                "Date: " + safe(event.date)
+        );
+
+        TextView tvTime = createDetailText(
+                "Time: " + safe(event.time)
+        );
+
+        TextView tvVenue = createDetailText(
+                "Location: " + safe(event.venue)
+        );
+
+        details.addView(tvTitle);
+        details.addView(tvCategory);
+        details.addView(tvDate);
+        details.addView(tvTime);
+        details.addView(tvVenue);
+
+        cardContent.addView(banner);
+        cardContent.addView(details);
+
+        card.addView(cardContent);
+
+        // Open event details
+        card.setOnClickListener(v ->
+                openEventDetails(event)
+        );
+
+        layoutEvents.addView(card);
+    }
+
+    // Create event detail text
+    private TextView createDetailText(String value) {
+
+        TextView textView = new TextView(this);
+
+        textView.setText(value);
+        textView.setTextColor(Color.GRAY);
+        textView.setTextSize(13);
+        textView.setPadding(0, dpToPx(7), 0, 0);
+
+        return textView;
+    }
+
+    // Open Event Detail Activity
+    private void openEventDetails(EventModel event) {
+
+        Intent intent = new Intent(
+                HomeActivity.this,
+                EventDetailActivity.class
+        );
+
+        intent.putExtra("eventId", event.eventId);
+        intent.putExtra("eventTitle", event.title);
+        intent.putExtra("eventCategory", event.category);
+        intent.putExtra("eventDescription", event.description);
+        intent.putExtra("eventDate", event.date);
+        intent.putExtra("eventTime", event.time);
+        intent.putExtra("eventVenue", event.venue);
+
+        startActivity(intent);
+    }
+
+    // Safe string handling
+    private String safe(String value) {
+
+        return value == null || value.trim().isEmpty()
+                ? "Not available"
+                : value;
+    }
+
+    // Convert dp to pixels
+    private int dpToPx(int dp) {
+
+        return (int) (dp * getResources()
+                .getDisplayMetrics().density + 0.5f);
+    }
+
+    // Reload events when returning to Home
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        sliderHandler.removeCallbacks(sliderRunnable);
+        sliderHandler.postDelayed(sliderRunnable, 3000);
+
+        if (db != null && layoutEvents != null) {
+            loadEvents();
+        }
+    }
+
+    // Stop automatic sliding
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        sliderHandler.removeCallbacks(sliderRunnable);
     }
 }

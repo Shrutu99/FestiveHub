@@ -35,25 +35,14 @@
                 android:paddingTop="42dp"
                 android:paddingBottom="22dp">
 
-                <LinearLayout
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Festive Hub"
-                        android:textColor="@color/white"
-                        android:textSize="23sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/sofia"/>
-
-
-
-                </LinearLayout>
+                    android:text="Festive Hub"
+                    android:textColor="@color/white"
+                    android:textSize="23sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/sofia"/>
 
                 <TextView
                     android:id="@+id/tvWelcome"
@@ -72,7 +61,6 @@
                     android:text="Discover exciting events around you."
                     android:textColor="#DCE5F0"
                     android:textSize="14sp"/>
-
 
             </LinearLayout>
 
@@ -107,10 +95,9 @@
                     android:layout_marginTop="18dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
-                    android:orientation="horizontal" />
+                    android:orientation="horizontal"/>
 
-
-                <!-- Carousel Page Indicators -->
+                <!-- Carousel Indicators -->
                 <LinearLayout
                     android:id="@+id/bannerIndicators"
                     android:layout_width="match_parent"
@@ -118,10 +105,9 @@
                     android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:padding="4dp" />
+                    android:padding="4dp"/>
 
-
-                <!-- Categories Heading -->
+                <!-- Event Categories Heading -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -239,148 +225,15 @@
 
                 </LinearLayout>
 
-                <!-- Event Card 1 -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardEvent1"
+                <!-- Dynamic Events From Firestore -->
+                <LinearLayout
+                    android:id="@+id/layoutEvents"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/white"
-                    app:strokeWidth="0dp">
+                    android:orientation="vertical"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <FrameLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="135dp"
-                            android:background="@color/primary">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="TECHNICAL EVENT"
-                                android:textColor="@color/white"
-                                android:textSize="20sp"
-                                android:textStyle="bold"/>
-
-                        </FrameLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="15dp">
-
-                            <TextView
-                                android:id="@+id/tvEventTitle1"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Tech Fest"
-                                android:textColor="@color/dark_text"
-                                android:textSize="17sp"
-                                android:textStyle="bold"/>
-
-                            <TextView
-                                android:id="@+id/tvEventDate1"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Date: To be announced"
-                                android:textColor="@color/grey"
-                                android:textSize="13sp"/>
-
-                            <TextView
-                                android:id="@+id/tvEventLocation1"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="5dp"
-                                android:text="Location: College Campus"
-                                android:textColor="@color/grey"
-                                android:textSize="13sp"/>
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Event Card 2 -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardEvent2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/white"
-                    app:strokeWidth="0dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <FrameLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="135dp"
-                            android:background="#F28C28">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="CULTURAL EVENT"
-                                android:textColor="@color/white"
-                                android:textSize="20sp"
-                                android:textStyle="bold"/>
-
-                        </FrameLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="15dp">
-
-                            <TextView
-                                android:id="@+id/tvEventTitle2"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Cultural Festival"
-                                android:textColor="@color/dark_text"
-                                android:textSize="17sp"
-                                android:textStyle="bold"/>
-
-                            <TextView
-                                android:id="@+id/tvEventDate2"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Date: To be announced"
-                                android:textColor="@color/grey"
-                                android:textSize="13sp"/>
-
-                            <TextView
-                                android:id="@+id/tvEventLocation2"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="5dp"
-                                android:text="Location: College Ground"
-                                android:textColor="@color/grey"
-                                android:textSize="13sp"/>
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
+                <!-- No Events Message -->
                 <TextView
                     android:id="@+id/tvNoEvents"
                     android:layout_width="match_parent"
@@ -392,16 +245,13 @@
                     android:textSize="15sp"
                     android:visibility="gone"/>
 
-
             </LinearLayout>
-
 
         </LinearLayout>
 
     </ScrollView>
 
     <!-- Bottom Navigation -->
-
     <LinearLayout
         android:id="@+id/bottomNavigation"
         android:layout_width="0dp"
@@ -427,7 +277,7 @@
                 android:layout_height="23dp"
                 android:src="@drawable/ic_home"
                 android:contentDescription="Home"
-                app:tint="@color/primary" />
+                app:tint="@color/primary"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -437,6 +287,7 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:layout_marginTop="3dp"/>
+
         </LinearLayout>
 
         <!-- My Events -->
@@ -452,7 +303,7 @@
                 android:layout_height="23dp"
                 android:src="@drawable/ic_event"
                 android:contentDescription="My Events"
-                app:tint="@color/grey" />
+                app:tint="@color/grey"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -461,10 +312,12 @@
                 android:textColor="@color/grey"
                 android:textSize="12sp"
                 android:layout_marginTop="3dp"/>
+
         </LinearLayout>
 
         <!-- Profile -->
         <LinearLayout
+            android:id="@+id/navProfile"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -476,7 +329,7 @@
                 android:layout_height="23dp"
                 android:src="@drawable/ic_profile"
                 android:contentDescription="Profile"
-                app:tint="@color/grey" />
+                app:tint="@color/grey"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -485,9 +338,9 @@
                 android:textColor="@color/grey"
                 android:textSize="12sp"
                 android:layout_marginTop="3dp"/>
+
         </LinearLayout>
 
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

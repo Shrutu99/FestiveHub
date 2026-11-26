@@ -108,40 +108,53 @@ public class LoginActivity extends AppCompatActivity {
 
                                     if (!document.exists()) {
                                         mAuth.signOut();
-                                        showLoginError(
-                                                "User profile not found."
-                                        );
+                                        showLoginError("User profile not found.");
                                         return;
                                     }
 
-                                    String role =
-                                            document.getString("role");
+                                    String role = document.getString("role");
 
-                                    // Only students can log in
-                                    if (role == null ||
-                                            !role.equalsIgnoreCase("student")) {
+                                    if (role == null) {
+                                        mAuth.signOut();
+                                        showLoginError("User role not assigned.");
+                                        return;
+                                    }
+
+                                    Intent intent;
+
+                                    if (role.equalsIgnoreCase("admin")) {
+
+                                        // Admin Dashboard
+                                        intent = new Intent(
+                                                LoginActivity.this,
+                                                AdminDashboardActivity.class
+                                        );
+
+                                    } else if (role.equalsIgnoreCase("student")) {
+
+                                        // Student Dashboard
+                                        intent = new Intent(
+                                                LoginActivity.this,
+                                                HomeActivity.class
+                                        );
+
+                                    } else if (role.equalsIgnoreCase("volunteer")) {
+
+                                        // Volunteer Dashboard is not created yet
+                                        mAuth.signOut();
+                                        showLoginError(
+                                                "Volunteer dashboard is not ready yet."
+                                        );
+                                        return;
+
+                                    } else {
 
                                         mAuth.signOut();
-
-                                        showLoginError(
-                                                "Only students are allowed to login."
-                                        );
+                                        showLoginError("Invalid user role.");
                                         return;
                                     }
 
-                                    // Student login successful
-                                    Toast.makeText(
-                                            LoginActivity.this,
-                                            "Login successful!",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-
-                                    // Open Student Home Page
-                                    Intent intent = new Intent(
-                                            LoginActivity.this,
-                                            HomeActivity.class
-                                    );
-
+                                  // Clear previous screens
                                     intent.setFlags(
                                             Intent.FLAG_ACTIVITY_NEW_TASK |
                                                     Intent.FLAG_ACTIVITY_CLEAR_TASK
